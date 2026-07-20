@@ -10,3 +10,9 @@
 3. Run the batch file named [RUN]_1-html_to_master_xl.bat (you will get 1-master_reddit_links_scraped.xlsx)
 4. Copy and paste the contents from the newly created file into 2-master_reddit_links_curated.xlsx. Also fill the extra contents of remaining fields
 5. Copy and paste the "Done" contents from 2-master_reddit_links_curated.xlsx into 3-reddit_links.xlsx
+
+Note: The only files that change across commits are:
+- source_html_contents.html
+- 1-master_reddit_links_scraped.xlsx
+- 2-master_reddit_links_curated.xlsx
+- 3-reddit_links.xlsx
