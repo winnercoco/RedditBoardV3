@@ -1,0 +1,234 @@
+"""
+app.py
+
+RedditBoard Dashboard
+"""
+
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
+
+from utils.helpers import (
+    load_data,
+)
+
+from utils.filters import (
+    create_sidebar,
+    apply_sidebar_filters,
+)
+
+from utils.query_parser import (
+    apply_advanced_query,
+)
+
+from utils.display import (
+    show_statistics,
+    show_results,
+)
+
+
+#####################################################################
+# Page Config
+#####################################################################
+
+st.set_page_config(
+    page_title="RedditBoard",
+    page_icon="📚",
+    layout="wide",
+)
+
+# st.title("📚 RedditBoard")
+# st.caption("Browse, search and filter your Reddit archive.")
+
+#####################################################################
+# Load Data
+#####################################################################
+
+DATA_FILE = Path(r"E:\\Cryo\\Private\\OTGX\\RedditBoardApplication\\RedditBoardV3\\data\\reddit_links.json")
+
+if not DATA_FILE.exists():
+
+    st.error(
+        f"Could not find {DATA_FILE}"
+    )
+
+    st.stop()
+
+try:
+
+    # data = load_data(DATA_FILE) #ORIGINAL
+    data = load_data() #TRIAL
+
+    df = pd.DataFrame(data)
+
+except Exception as e:
+
+    st.exception(e)
+
+    st.stop()
+
+#####################################################################
+# Sidebar
+#####################################################################
+# build the options shown in the sidebar
+filter_cache = {
+    "type": sorted(df["type"].dropna().unique()),
+    "subreddit": sorted(df["subreddit"].dropna().unique()),
+    "user": sorted(df["user"].dropna().unique()),
+    "content_source": sorted(df["content_source"].dropna().unique()),
+    "star": sorted({x for row in df["star"] for x in row}),
+    "core_cat": sorted(df["core_cat"].dropna().unique()),
+    "categories": sorted({x for row in df["categories"] for x in row}),
+    "positions": sorted({x for row in df["positions"] for x in row}),
+    "downloaded": sorted(df["downloaded"].dropna().unique()),
+    "isDel": sorted(df["isDel"].dropna().unique()),
+}
+
+filters = create_sidebar(filter_cache)
+
+filtered_df = apply_sidebar_filters(
+    df,
+    filters,
+)
+
+# filtered_df = apply_sidebar_filters(
+#     st.sidebar,
+#     df,
+# )
+
+#####################################################################
+# Advanced Query
+#####################################################################
+
+st.sidebar.divider()
+
+st.sidebar.subheader("Advanced Query")
+
+advanced_query = st.sidebar.text_area(
+    label="",
+    placeholder="""
+Examples
+
+type = (gif OR img)
+
+subreddit = cats
+
+categories = ((heels OR stockings) AND feet)
+
+rate >= 7
+
+downloaded = Yes
+
+user ~= "^Ana.*"
+""".strip(),
+    height=180,
+)
+
+if advanced_query.strip():
+
+    try:
+
+        filtered_df = apply_advanced_query(
+            filtered_df,
+            advanced_query,
+        )
+
+    except Exception as e:
+
+        st.sidebar.error(
+            f"Query Error:\n{e}"
+        )
+
+#####################################################################
+# Sorting
+#####################################################################
+
+st.sidebar.divider()
+
+sort_options = [
+
+    "None",
+
+    "Rating (High → Low)",
+
+    "Rating (Low → High)",
+
+    "Title (A → Z)",
+
+    "Title (Z → A)",
+
+]
+
+sort_choice = st.sidebar.selectbox(
+    "Sort",
+    sort_options,
+)
+
+if sort_choice == "Rating (High → Low)":
+
+    filtered_df = filtered_df.sort_values(
+        "rate",
+        ascending=False,
+    )
+
+elif sort_choice == "Rating (Low → High)":
+
+    filtered_df = filtered_df.sort_values(
+        "rate",
+        ascending=True,
+    )
+
+elif sort_choice == "Title (A → Z)":
+
+    filtered_df = filtered_df.sort_values(
+        "post_title",
+        ascending=True,
+    )
+
+elif sort_choice == "Title (Z → A)":
+
+    filtered_df = filtered_df.sort_values(
+        "post_title",
+        ascending=False,
+    )
+
+filtered_df = filtered_df.reset_index(drop=True)
+
+#####################################################################
+# Main Dashboard
+#####################################################################
+
+# st.divider()
+title_col, stats_col = st.columns([2,1])
+
+with title_col:
+    st.subheader("RedditBoard")
+    st.caption("Browse, search and filter your Reddit archive.")
+
+with stats_col:
+    show_statistics(filtered_df)
+
+# show_statistics(filtered_df)
+show_results(filtered_df)
+
+#####################################################################
+# Footer
+#####################################################################
+
+st.divider()
+
+left, right = st.columns([3, 1])
+
+with left:
+
+    st.caption(
+        f"Showing {len(filtered_df)} "
+        f"of {len(df)} saved Reddit items."
+    )
+
+with right:
+
+    st.caption(
+        "RedditBoard v1.0"
+    )
