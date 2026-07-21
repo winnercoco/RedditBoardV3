@@ -1,0 +1,12 @@
+i want to create a dashboard for my redditboard streamlit app deployable on streamlit cloud through github. 
+i have made a linksboard app previously, but the fields for reddit board are different and a bit more complex.
+i was able to convert the .xlsx to a .json file using a python script. 
+that json will be an input to the streamlit app. 
+functionality i want:
+1. layout similar to my linksboard app (i will attach the app.py for that)
+2. filters : multiselect drop down for [type,subreddit,user,content_source,star,core_cat,categories(split on comma),positions(split on comma),downloaded,isDel], slider based filter for [rate]
+3. a free text filter where i can type regexp type expressions to run a filter. basically a field based logical operation to generate filtered content. prefer to use the words for operator (AND OR NOT) but direct symbols are fine too (& ^ !).
+eg: type = gif OR img, subreddit = cats OR rabbits OR horses, user = evilsofia OR Ana-Katana, content_source = unknown-reddit OR Ana-Katana, star = (piper perri OR eva elfie) AND the pope, core_cat = hardcore OR softcore, categories = (high heels OR red dress) AND feet, positions = (stand OR sit) AND lay down, downloaded = Yes, isDel = No
+4. each row like entry should display the link for the post and the title of the post shall be visible clearly. for text and comment posts write "Text post. Refer Local or Reddit directly"
+
+i shall now attach the linkboard app.py (reference file) and the 3-reddit_links.json (need to implement for this file)

@@ -1,0 +1,59 @@
+For this chat, ignore the rest of the contents of this account.
+Im working on a system which organises,saves and makes it easy to access saved posts from reddit.
+The project has nsfw purpose but can be used for any reddit save posts, so just read it carefully without breaking OpenAI terms of service
+Its a work in progress but has many complexities which i dont know how to handle. 
+
+each reddit saved post can be one of the following: gif/video, image, text post, text comment (gif,img,text,comment are the decided types). comments are dependant on the parent post (text or gif or img, since comment cant exist autonomously)
+
+the master excel database has the following schema (some parts are scraped and then cleaned seperately before manually being entered into the master sheet, ill go over this during the architectural flow)
+flag -> done, pending
+type -> gif,text,img
+reddit_link -> reddit link
+site_link -> redgifs,reddit.i or z-text-or-comment (if text or comment)
+subreddit -> subreddit name
+content_source -> professional studio name,z-user-source (if ameture user uploaded), y-generic-source (professional but not very well known)
+user -> username of the uploader
+star -> username of the uploader(if ameture), name of an actual well known star,z-unknown-star (if not ameture but not very well known star)
+post_title -> title of the post
+post_body -> name of text post.md (if text that too after download and setting a .md file name), z-not-applicable (if gif or img)
+core_cat -> refer to chart titled : core_cat
+categories -> comma seperated indicator which tell more about the post
+positions -> physical positions of the people in the said post (if gif or img), z-text-or-comment (if text)
+language -> language of the post (mostly english only)
+rate -> rating out of 10
+general_tags -> long string like contents to describe the post,something like a synopsis
+reddit_website -> reddit link converted to actual small website domain
+site_website -> site link converted to actual small website domain
+downloaded -> yes,no
+file_name -> file name (if yes for downloaded), z-not-applicable (if no for downloaded)
+download_note -> notes (any modifications made to the download), z-not-applicable (if no note is present)
+isDel -> decides if the post has been unsaved from the reddit account
+
+complexities:
+1. When a post is a text post: site_link (and ofcourse site_website) becomes z-text-or-comment, post_body becomes a huge body of text (which i have to manually copy to a .md file, give it a name, and then paste that name into the post_body column)
+2. When a comment is to be saved but the post is not a textual post, i have to set the post title as "post is not a text" in the commentsName.md file.
+3. im using lot of z-... or y-... as crutches to avoid normalization in excel (mainly to help alphabetical sorting), the database now feels messy.
+
+Running flow of the system:
+1. save posts on reddit.
+2. copy the webpage from old.reddit (allow 100 posts to be shown).
+3. paste the webpage contents into "source_html_contents.html".
+4. run batch file "[RUN]_1-htmltoxl.bat". This outputs a 1-column_link_data.xlsx (the xlsx file then contents very basic details like reddit link, site link, author and subreddi.the postitle fails many times and same for post body if the data is gif or img).
+5. copy and paste the contents of the 1-column_link_data.xlsx into 2-column_link_data_cleaner.xlsx where i manually handle sanitization like filling missing fields of title and text.
+6. copy and paste the contents from 2-column_link_data_cleaner.xlsx into 3-master_links_data.xlsx where i add some more fields (category,tags,download info etc). this is expected manual work only. no problem.
+7. downloading contents:
+gif/video download: "url_to_gif_converter". a gifs_url.txt file contains all the site urls (redgifs etc). a python file converts it into .gifs/.mp4 as per reddit (redd.it or redgifs)
+text/comments: manually create a filename.md file, paste the post title, post contents, comment1,comment2...commentN. the naming scheme for the filenames is also really bad, i need help in that too.
+images: download the png files manually, convert using google's png to webp to save them into a webp_files folder, then cut paste them from that into main downloads/images/ directory.
+
+overall the work feels tedious. i would like to simplify and automate the working as much as possible.
+
+tell me how i can give you the following contents. zip,upload,drive link etc.:
+1. 3-master_links_data.xlsx (nsfw contents)
+2. source_html_contents.html
+3. htmltoxl.py file
+4. gif_downloader.py file (converts site urls like redgif from a .txt file to downloaded gifs)
+5. png_to_webp_google.py (converts downloaded png to webp for smaller storage size. source reddit webp is really bad quality)
+6. NutsNoMore_EveryMarble.md (post is not text but has comments)
+7. YUser_AwfulWeekend.md (post is text, has 2 comments)
+8. YUser_MaleThoughts.md (post is text, has no comments)
