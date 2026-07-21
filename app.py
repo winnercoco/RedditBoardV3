@@ -45,7 +45,9 @@ st.set_page_config(
 # Load Data
 #####################################################################
 
-DATA_FILE = Path(r"E:\\Cryo\\Private\\OTGX\\RedditBoardApplication\\RedditBoardV3\\data\\reddit_links.json")
+BASE_DIR = Path(__file__).resolve().parent
+
+DATA_FILE = BASE_DIR / "data" / "reddit_links.json"
 
 if not DATA_FILE.exists():
 
