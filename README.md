@@ -16,3 +16,4 @@ Note: The only files that change across commits are:
 - 1-master_reddit_links_scraped.xlsx
 - 2-master_reddit_links_curated.xlsx
 - 3-reddit_links.xlsx
+- reddit_links.json
