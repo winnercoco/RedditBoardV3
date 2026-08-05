@@ -19,6 +19,7 @@ def uniformity(selectedColumn):
     words = (
         df[selectedColumn]
         .dropna()
+        .astype(str)
         .str.split(",")
         .explode()
         .str.strip()
